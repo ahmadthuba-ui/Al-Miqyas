@@ -1,0 +1,17 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cek Install Al-Miqyas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:640px;margin:0 auto;padding:18px;background:#0f2a20;color:#eef}li{margin:6px 0}.ok{color:#8fe3ae}.no{color:#ff9d9d}button{padding:10px 16px;font-size:15px;border-radius:10px;border:0;background:#e6c36a}code{word-break:break-all}</style></head><body>
+<h2>Cek Install Al-Miqyas</h2><ul id="o"></ul><button id="b" hidden>Install sekarang</button>
+<script>
+var o=document.getElementById('o'),ev;
+function add(t,ok){var l=document.createElement('li');l.className=ok?'ok':'no';l.textContent=(ok?'✔ ':'✘ ')+t;o.appendChild(l);}
+add('Alamat: '+location.href+(location.protocol==='https:'||location.hostname==='localhost'?'':' (harus https)'),location.protocol==='https:'||location.hostname==='localhost');
+fetch('manifest.webmanifest',{cache:'no-store'}).then(function(r){add('manifest.webmanifest → HTTP '+r.status,r.ok);return r.json();}).then(function(m){
+ add('nama: '+m.name+' · display: '+m.display,!!m.name&&m.display==='standalone');
+ return Promise.all((m.icons||[]).map(function(i){return fetch(i.src,{cache:'no-store'}).then(function(r){add(i.src+' ('+i.sizes+', '+i.purpose+') → HTTP '+r.status,r.ok);});}));
+}).catch(function(e){add('manifest gagal dibaca: '+e,false);});
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){add('service worker terdaftar: '+rs.length+(rs[0]?' ('+(rs[0].active?'aktif':'belum aktif')+')':' — buka dulu halaman utama sekali'),rs.length>0&&!!rs[0].active);});}else add('browser tanpa service worker',false);
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;add('Chrome MENGIZINKAN install halaman ini (event beforeinstallprompt diterima)',true);var b=document.getElementById('b');b.hidden=false;b.onclick=function(){ev.prompt();};});
+window.addEventListener('appinstalled',function(){add('sudah ter-install',true);});
+setTimeout(function(){if(!ev)add('Chrome belum mengirim izin install di halaman ini (jika semua baris lain ✔, kemungkinan aplikasi sudah terpasang — cek chrome://apps — atau buka halaman utama dulu lalu muat ulang halaman ini)',false);},4000);
+</script></body></html>
